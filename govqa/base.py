@@ -1,8 +1,8 @@
 import re
 from datetime import datetime
-import dateutil.parser
 from urllib.parse import parse_qs, urlparse
 
+import dateutil.parser
 import jsonschema
 import lxml.html
 import scrapelib
@@ -48,10 +48,11 @@ class GovQA(scrapelib.Scraper):
     :type domain: str
     """
 
-    def __init__(self, domain, *args, **kwargs):
+    def __init__(self, domain, check_login=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.domain = domain.rstrip("/")
+        self._check_login = check_login
 
         response = self.get(self.url_from_endpoint(""), allow_redirects=True)
 
@@ -304,6 +305,8 @@ class GovQA(scrapelib.Scraper):
         return body
 
     def _check_logged_in(self, response):
+        if not self._check_login:
+            return
         results = re.search('dtrum.identifyUser\("(.*)"\);', response.text).group(1)
         if not results.split(";")[-1]:
             raise UnauthenticatedError(
