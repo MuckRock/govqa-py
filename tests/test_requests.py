@@ -56,7 +56,9 @@ def request_page(messages="", attachments=""):
 def test_lists_request_ids_and_reference_numbers(client, requests_mock):
     requests_mock.get(
         f"{BASE}CustomerIssues.aspx",
-        text=page(request_row(101, "R000101", "Open"), request_row(102, "R000102", "Open")),
+        text=page(
+            request_row(101, "R000101", "Open"), request_row(102, "R000102", "Open")
+        ),
     )
 
     requests = client.list_requests()
@@ -67,14 +69,12 @@ def test_lists_request_ids_and_reference_numbers(client, requests_mock):
     ]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="status XPath starts with '//', so every request gets the first request's status",
-)
 def test_lists_each_requests_own_status(client, requests_mock):
     requests_mock.get(
         f"{BASE}CustomerIssues.aspx",
-        text=page(request_row(101, "R000101", "Open"), request_row(102, "R000102", "Closed")),
+        text=page(
+            request_row(101, "R000101", "Open"), request_row(102, "R000102", "Closed")
+        ),
     )
 
     statuses = [r["status"] for r in client.list_requests()]
@@ -104,7 +104,9 @@ def test_get_request_requires_login(client, requests_mock):
         client.get_request(101)
 
 
-def test_parses_message_sender_date_and_collapses_body_whitespace(client, requests_mock):
+def test_parses_message_sender_date_and_collapses_body_whitespace(
+    client, requests_mock
+):
     requests_mock.get(
         f"{BASE}RequestEdit.aspx?rid=101",
         text=request_page(
@@ -170,7 +172,9 @@ def test_parses_s3_and_azure_attachment_urls(client, requests_mock):
     assert azure == {
         "url": AZURE_URL,
         "content-disposition": "attachment; filename=notes.docx",
-        "expires": datetime.datetime(2023, 11, 14, 22, 13, 20, tzinfo=datetime.timezone.utc),
+        "expires": datetime.datetime(
+            2023, 11, 14, 22, 13, 20, tzinfo=datetime.timezone.utc
+        ),
         "uploaded_at": datetime.date(2023, 2, 6),
     }
 

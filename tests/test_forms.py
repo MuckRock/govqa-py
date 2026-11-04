@@ -4,7 +4,12 @@ import jsonschema
 import pytest
 import scrapelib
 
-from govqa import EmailAlreadyExists, FormValidationError, IncorrectCaptcha, UnauthenticatedError
+from govqa import (
+    EmailAlreadyExists,
+    FormValidationError,
+    IncorrectCaptcha,
+    UnauthenticatedError,
+)
 from tests import pages
 from tests.pages import BASE, DOMAIN
 
@@ -29,7 +34,8 @@ def request_form_page(captcha=False, extra=""):
 
 def mock_captcha_files(requests_mock):
     requests_mock.get(
-        f"{DOMAIN}/captcha.jpg", [{"content": b"first-jpeg"}, {"content": b"second-jpeg"}]
+        f"{DOMAIN}/captcha.jpg",
+        [{"content": b"first-jpeg"}, {"content": b"second-jpeg"}],
     )
     requests_mock.get(f"{DOMAIN}/captcha.wav", content=b"wav")
 
@@ -50,7 +56,7 @@ VALID_REQUEST = {
 
 def sent_form(requests_mock):
     """Fields of the most recent POST, which may be followed by captcha or redirect GETs."""
-    (*_, post) = (r for r in requests_mock.request_history if r.method == "POST")
+    *_, post = (r for r in requests_mock.request_history if r.method == "POST")
     return {k: v[0] for k, v in parse_qs(post.text).items()}
 
 
@@ -105,13 +111,17 @@ def test_request_form_with_captcha_requires_captcha_answer(client, requests_mock
 def test_request_submit_returns_reference_number(request_form, requests_mock):
     requests_mock.post(
         REQUEST_URL,
-        text=pages.page('<span id="ConfirmFormLayout_roReferenceNo">R000999-010123</span>'),
+        text=pages.page(
+            '<span id="ConfirmFormLayout_roReferenceNo">R000999-010123</span>'
+        ),
     )
 
     assert request_form.submit(VALID_REQUEST) == "R000999-010123"
 
 
-def test_request_submit_posts_filled_fields_and_hidden_state(request_form, requests_mock):
+def test_request_submit_posts_filled_fields_and_hidden_state(
+    request_form, requests_mock
+):
     requests_mock.post(
         REQUEST_URL,
         text=pages.page('<span id="ConfirmFormLayout_roReferenceNo">R1</span>'),
@@ -162,14 +172,18 @@ def test_request_submit_raises_site_validation_error(request_form, requests_mock
         request_form.submit(VALID_REQUEST)
 
 
-def test_request_submit_raises_when_page_has_no_reference_or_errors(request_form, requests_mock):
+def test_request_submit_raises_when_page_has_no_reference_or_errors(
+    request_form, requests_mock
+):
     requests_mock.post(REQUEST_URL, text=pages.page(pages.secrets()))
 
     with pytest.raises(FormValidationError, match="unknown reason"):
         request_form.submit(VALID_REQUEST)
 
 
-def test_request_submit_with_wrong_captcha_refreshes_captcha_and_state(client, requests_mock):
+def test_request_submit_with_wrong_captcha_refreshes_captcha_and_state(
+    client, requests_mock
+):
     requests_mock.get(REQUEST_URL, text=request_form_page(captcha=True))
     mock_captcha_files(requests_mock)
     form = client.request_form()
@@ -187,9 +201,10 @@ def test_request_submit_with_wrong_captcha_refreshes_captcha_and_state(client, r
 
     assert form.captcha["jpeg"].read() == b"second-jpeg"
     assert form._payload["__VIEWSTATE"] == "new-vs"
-    assert ("BDC_VCID_c_requestopen_captchaformlayout_reqstopencaptcha", "hash2") in form.required_inputs[
-        "captcha"
-    ].fill("ABCD")
+    assert (
+        "BDC_VCID_c_requestopen_captchaformlayout_reqstopencaptcha",
+        "hash2",
+    ) in form.required_inputs["captcha"].fill("ABCD")
 
 
 def test_request_submit_sends_captcha_answer(client, requests_mock):
@@ -255,13 +270,16 @@ def test_account_form_schema_folds_confirm_password_into_password(account_form):
     assert account_form.account_creation_page == ACCOUNT_URL
 
 
-def test_account_submit_returns_true_when_redirected_to_customer_home(account_form, requests_mock):
+def test_account_submit_returns_true_when_redirected_to_customer_home(
+    account_form, requests_mock
+):
     requests_mock.post(
         ACCOUNT_URL, status_code=302, headers={"Location": f"{BASE}CustomerHome.aspx"}
     )
     # GovQA serves an error page right after account creation.
     requests_mock.get(
-        f"{BASE}CustomerHome.aspx", text="There was a problem serving the requested page"
+        f"{BASE}CustomerHome.aspx",
+        text="There was a problem serving the requested page",
     )
 
     assert account_form.submit(VALID_ACCOUNT) is True
@@ -270,28 +288,36 @@ def test_account_submit_returns_true_when_redirected_to_customer_home(account_fo
     assert sent[f"{CUST}$txtEmail"] == "ada@example.com"
     assert sent[f"{CUST}$txtPassword"] == "s3cret"
     assert sent[f"{CUST}$txtConfirmPassword"] == "s3cret"
-    assert sent[f"{CUST}$txtPhoneMask$State"] == '{"rawValue":"3125550100","validationState":""}'
+    assert (
+        sent[f"{CUST}$txtPhoneMask$State"]
+        == '{"rawValue":"3125550100","validationState":""}'
+    )
     assert sent[f"{CUST}$chkTerms"] == "C"
     assert sent["captchaFormLayout$CaptchaCodeTextBox"] == "AB12"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="Captcha ignores workaround_input_name and always uses the request form's name",
-)
-def test_account_submit_sends_account_captcha_workaround_field(account_form, requests_mock):
-    requests_mock.post(ACCOUNT_URL, text=pages.page(pages.secrets(), pages.form_errors("x")))
+def test_account_submit_sends_account_captcha_workaround_field(
+    account_form, requests_mock
+):
+    requests_mock.post(
+        ACCOUNT_URL, text=pages.page(pages.secrets(), pages.form_errors("x"))
+    )
 
     with pytest.raises(FormValidationError):
         account_form.submit(VALID_ACCOUNT)
 
-    assert "BDC_BackWorkaround_c_customerdetails_captchaformlayout_captcha" in sent_form(
-        requests_mock
+    assert (
+        "BDC_BackWorkaround_c_customerdetails_captchaformlayout_captcha"
+        in sent_form(requests_mock)
     )
 
 
-def test_account_submit_reraises_errors_not_from_customer_home(account_form, requests_mock):
-    requests_mock.post(ACCOUNT_URL, text="There was a problem serving the requested page")
+def test_account_submit_reraises_errors_not_from_customer_home(
+    account_form, requests_mock
+):
+    requests_mock.post(
+        ACCOUNT_URL, text="There was a problem serving the requested page"
+    )
 
     with pytest.raises(scrapelib.HTTPError):
         account_form.submit(VALID_ACCOUNT)
@@ -300,14 +326,18 @@ def test_account_submit_reraises_errors_not_from_customer_home(account_form, req
 def test_account_submit_raises_when_email_exists(account_form, requests_mock):
     requests_mock.post(
         ACCOUNT_URL,
-        text=pages.page(pages.secrets(), pages.form_errors("Email address already exists.")),
+        text=pages.page(
+            pages.secrets(), pages.form_errors("Email address already exists.")
+        ),
     )
 
     with pytest.raises(EmailAlreadyExists):
         account_form.submit(VALID_ACCOUNT)
 
 
-def test_account_submit_with_wrong_captcha_refreshes_captcha(account_form, requests_mock):
+def test_account_submit_with_wrong_captcha_refreshes_captcha(
+    account_form, requests_mock
+):
     requests_mock.post(
         ACCOUNT_URL,
         text=pages.page(

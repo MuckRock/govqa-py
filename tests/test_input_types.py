@@ -75,12 +75,17 @@ def test_phone_requires_ten_digits_and_sends_devexpress_state():
 
 def test_password_fills_confirmation_field_too():
     password_table, source = parse(pages.text_field("c", "txtPassword", "Password"))
-    confirm_table, _ = parse(pages.text_field("c", "txtConfirmPassword", "Confirm Password"))
+    confirm_table, _ = parse(
+        pages.text_field("c", "txtConfirmPassword", "Confirm Password")
+    )
 
     field = Password(password_table, source)
     field.add_confirmation(confirm_table)
 
-    assert field.fill("s3cret") == [("c$txtPassword", "s3cret"), ("c$txtConfirmPassword", "s3cret")]
+    assert field.fill("s3cret") == [
+        ("c$txtPassword", "s3cret"),
+        ("c$txtConfirmPassword", "s3cret"),
+    ]
 
 
 def test_radio_group_reads_options_from_devexpress_script():
@@ -158,9 +163,14 @@ CAPTCHA_CONFIG = {
 
 
 def test_captcha_downloads_image_and_audio():
-    tree = lxml.html.fromstring(pages.page(pages.captcha("requestopen", "reqstopencaptcha")))
+    tree = lxml.html.fromstring(
+        pages.page(pages.captcha("requestopen", "reqstopencaptcha"))
+    )
     session = FakeSession(
-        {f"{pages.DOMAIN}/captcha.jpg": b"jpeg-bytes", f"{pages.DOMAIN}/captcha.wav": b"wav-bytes"}
+        {
+            f"{pages.DOMAIN}/captcha.jpg": b"jpeg-bytes",
+            f"{pages.DOMAIN}/captcha.wav": b"wav-bytes",
+        }
     )
 
     captcha = Captcha(session, tree, **CAPTCHA_CONFIG)
@@ -172,7 +182,9 @@ def test_captcha_downloads_image_and_audio():
 
 def test_captcha_fills_answer_with_hash_and_workaround():
     tree = lxml.html.fromstring(
-        pages.page(pages.captcha("requestopen", "reqstopencaptcha", hash_value="abc123"))
+        pages.page(
+            pages.captcha("requestopen", "reqstopencaptcha", hash_value="abc123")
+        )
     )
     session = FakeSession(
         {f"{pages.DOMAIN}/captcha.jpg": b"", f"{pages.DOMAIN}/captcha.wav": b""}

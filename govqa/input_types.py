@@ -137,10 +137,6 @@ class Captcha:
                 f'//input[@name="{captcha_hash_input_name}"]'
             )
 
-            workaround_input_name = (
-                "BDC_BackWorkaround_c_requestopen_captchaformlayout_reqstopencaptcha"
-            )
-
             self._payload = [
                 (captcha_hash_input_name, captcha_hash_input[0].value),
                 (workaround_input_name, "1"),

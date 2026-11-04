@@ -8,12 +8,12 @@ This file provides guidance to AI coding agents working with code in this reposi
 
 ## Commands
 
-Packaging uses uv with the `uv_build` backend; everything is in `pyproject.toml`. Tests live in `tests/` and run offline against fake GovQA pages built in `tests/pages.py` and served by `requests-mock`. There is no CI test job or lint config yet.
+Packaging uses uv with the `uv_build` backend; everything is in `pyproject.toml`. Tests live in `tests/` and run offline against fake GovQA pages built in `tests/pages.py` and served by `requests-mock`. `.github/workflows/test.yml` runs the tests on Python 3.10–3.15 and checks formatting with black and isort (black profile) on every PR and push to `main`.
 
 ```bash
 uv sync                                # install the package plus the dev group: sphinx, pytest, requests-mock, black, isort
 uv run pytest                          # run the test suite
-uv run black govqa && uv run isort govqa
+uv run black govqa tests && uv run isort govqa tests
 uv run make -C docs html               # build Sphinx docs (docs/index.rst holds the usage guide + autodoc API)
 uv build                               # build sdist and wheel into dist/
 ```

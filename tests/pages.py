@@ -67,7 +67,10 @@ def radio_field(prefix, name, label, options):
 
 
 def combo_field(prefix, name, label, options):
-    items = ",".join(["{'value':'','text':''}"] + [f"{{'value':'{o}','text':'{o}'}}" for o in options])
+    items = ",".join(
+        ["{'value':'','text':''}"]
+        + [f"{{'value':'{o}','text':'{o}'}}" for o in options]
+    )
     script = (
         f"<script>ASPx.createControl({{'uniqueID':'{prefix}${name}$DDD$L',"
         f"'itemsInfo':[{items}]}});</script>"

@@ -5,7 +5,9 @@ from tests.pages import BASE, DOMAIN, page
 
 
 def mock_home(requests_mock):
-    requests_mock.get(BASE, status_code=302, headers={"Location": f"{BASE}SupportHome.aspx"})
+    requests_mock.get(
+        BASE, status_code=302, headers={"Location": f"{BASE}SupportHome.aspx"}
+    )
     requests_mock.get(f"{BASE}SupportHome.aspx", text=page())
 
 
