@@ -1,11 +1,12 @@
 name: Publish to PyPI
 
-on: push
+on:
+  release:
+    types: [published]
 
 jobs:
   build-and-publish:
     name: Publish to PyPI
-    if: startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

@@ -18,7 +18,7 @@ uv run make -C docs html               # build Sphinx docs (docs/index.rst holds
 uv build                               # build sdist and wheel into dist/
 ```
 
-Release: the version lives in `pyproject.toml` (bump with `uv version --bump patch`). `govqa.__version__` reads it from installed metadata. A push to `main` publishes to Test PyPI. Pushing a tag publishes to PyPI (`.github/workflows/`). Read the Docs builds `docs/` using `docs/requirements.txt`.
+Release: the version lives in `pyproject.toml` (bump with `uv version --bump patch`). `govqa.__version__` reads it from installed metadata. A push to `main` publishes to Test PyPI. Publishing a GitHub release publishes to PyPI (`.github/workflows/`). Read the Docs builds `docs/` using `docs/requirements.txt`.
 
 ## Architecture
 
