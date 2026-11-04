@@ -8,19 +8,14 @@ on:
 jobs:
   build-and-publish:
     name: Publish to Test PyPI
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.9
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v6
+    - name: Build
+      run: uv build
     - name: Publish to Test PyPI
       env:
-        TWINE_USERNAME: '__token__'
-        TWINE_PASSWORD: ${{ secrets.test_pypi_token }}
-      run: |
-        pip install twine wheel
-        pip wheel -w dist --no-deps .
-        twine upload --skip-existing --repository-url https://test.pypi.org/legacy/ dist/*
+        UV_PUBLISH_TOKEN: ${{ secrets.test_pypi_token }}
+      run: uv publish --publish-url https://test.pypi.org/legacy/ --check-url https://test.pypi.org/simple/
       continue-on-error: true

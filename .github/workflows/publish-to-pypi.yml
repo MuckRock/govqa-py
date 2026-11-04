@@ -6,19 +6,14 @@ jobs:
   build-and-publish:
     name: Publish to PyPI
     if: startsWith(github.event.ref, 'refs/tags')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.9
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v6
+    - name: Build
+      run: uv build
     - name: Publish to PyPI
       env:
-        TWINE_USERNAME: '__token__'
-        TWINE_PASSWORD: ${{ secrets.pypi_token }}
-      run: |
-        pip install twine wheel
-        pip wheel -w dist --no-deps .
-        twine upload --skip-existing dist/*
+        UV_PUBLISH_TOKEN: ${{ secrets.pypi_token }}
+      run: uv publish --check-url https://pypi.org/simple/
       continue-on-error: true

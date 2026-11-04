@@ -1,4 +1,6 @@
-__version__ = "1.0.1"
+from importlib.metadata import version
+
+__version__ = version("govqa")
 
 from .base import (
     EmailAlreadyExists,

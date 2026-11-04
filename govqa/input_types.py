@@ -58,8 +58,7 @@ class ConstrainedInput(Input):
         super().__init__(table, source_text)
         self.properties["enum"] = self._valid_values(table, source_text)
 
-    def _valid_values(self, table, source_text):
-        ...
+    def _valid_values(self, table, source_text): ...
 
 
 class RadioGroup(ConstrainedInput):

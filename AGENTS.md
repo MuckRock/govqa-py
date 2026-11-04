@@ -8,16 +8,17 @@ This file provides guidance to AI coding agents working with code in this reposi
 
 ## Commands
 
-Packaging uses `setup.py`/`setup.cfg` (setuptools). Tests live in `tests/` and run offline against fake GovQA pages built in `tests/pages.py` and served by `requests-mock`. There is no CI test job or lint config yet.
+Packaging uses uv with the `uv_build` backend; everything is in `pyproject.toml`. Tests live in `tests/` and run offline against fake GovQA pages built in `tests/pages.py` and served by `requests-mock`. There is no CI test job or lint config yet.
 
 ```bash
-pip install -e ".[dev]"        # dev extras: sphinx, pytest, requests-mock, black, isort
-pytest                         # run the test suite
-black govqa && isort govqa     # formatting tools listed in dev extras
-make -C docs html              # build Sphinx docs (docs/index.rst holds the usage guide + autodoc API)
+uv sync                                # install the package plus the dev group: sphinx, pytest, requests-mock, black, isort
+uv run pytest                          # run the test suite
+uv run black govqa && uv run isort govqa
+uv run make -C docs html               # build Sphinx docs (docs/index.rst holds the usage guide + autodoc API)
+uv build                               # build sdist and wheel into dist/
 ```
 
-Release: the version lives in `govqa/__init__.py` (`__version__`) and `setup.cfg` reads it from there. A push to `main` publishes to Test PyPI. Pushing a tag publishes to PyPI (`.github/workflows/`). Read the Docs builds `docs/` using `docs/requirements.txt`.
+Release: the version lives in `pyproject.toml` (bump with `uv version --bump patch`). `govqa.__version__` reads it from installed metadata. A push to `main` publishes to Test PyPI. Pushing a tag publishes to PyPI (`.github/workflows/`). Read the Docs builds `docs/` using `docs/requirements.txt`.
 
 ## Architecture
 

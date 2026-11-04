@@ -1,0 +1,44 @@
+[project]
+name = "govqa"
+version = "1.0.1"
+description = "Interact with GovQA, a public records request management platform owned by Granicus"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "DataMade", email = "info@datamade.us" }]
+requires-python = ">=3.10"
+dependencies = [
+    "jsonschema",
+    "lxml",
+    "python-dateutil",
+    "scrapelib",
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming Language :: Python :: 3",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://datamade.us"
+Repository = "https://github.com/datamade/govqa-py"
+
+[dependency-groups]
+dev = [
+    "black",
+    "isort",
+    "pytest",
+    "requests-mock",
+    "sphinx",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "govqa"
+module-root = ""
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
