@@ -8,10 +8,11 @@ This file provides guidance to AI coding agents working with code in this reposi
 
 ## Commands
 
-Packaging uses `setup.py`/`setup.cfg` (setuptools). There is no test suite, CI test job or lint config in the repo yet.
+Packaging uses `setup.py`/`setup.cfg` (setuptools). Tests live in `tests/` and run offline against fake GovQA pages built in `tests/pages.py` and served by `requests-mock`. There is no CI test job or lint config yet.
 
 ```bash
 pip install -e ".[dev]"        # dev extras: sphinx, pytest, requests-mock, black, isort
+pytest                         # run the test suite
 black govqa && isort govqa     # formatting tools listed in dev extras
 make -C docs html              # build Sphinx docs (docs/index.rst holds the usage guide + autodoc API)
 ```
