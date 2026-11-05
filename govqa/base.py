@@ -197,7 +197,7 @@ class GovQA(scrapelib.Scraper):
                     "id": parse_qs(urlparse(link.attrib["href"]).query)["rid"][0],
                     "reference_number": link.text,
                     "status": link.xpath(
-                        "//ancestor::div[@class='innerlist']/descendant::div[starts-with(@class, 'list_status')]/text()"
+                        "ancestor::div[@class='innerlist']/descendant::div[starts-with(@class, 'list_status')]/text()"
                     )[0],
                 }
             )
@@ -307,7 +307,7 @@ class GovQA(scrapelib.Scraper):
     def _check_logged_in(self, response):
         if not self._check_login:
             return
-        results = re.search('dtrum.identifyUser\("(.*)"\);', response.text).group(1)
+        results = re.search(r'dtrum.identifyUser\("(.*)"\);', response.text).group(1)
         if not results.split(";")[-1]:
             raise UnauthenticatedError(
                 "This method requires authentication, please run the `login` method before calling this method"

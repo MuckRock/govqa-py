@@ -58,8 +58,7 @@ class ConstrainedInput(Input):
         super().__init__(table, source_text)
         self.properties["enum"] = self._valid_values(table, source_text)
 
-    def _valid_values(self, table, source_text):
-        ...
+    def _valid_values(self, table, source_text): ...
 
 
 class RadioGroup(ConstrainedInput):
@@ -136,10 +135,6 @@ class Captcha:
         if self.info:
             captcha_hash_input = tree.xpath(
                 f'//input[@name="{captcha_hash_input_name}"]'
-            )
-
-            workaround_input_name = (
-                "BDC_BackWorkaround_c_requestopen_captchaformlayout_reqstopencaptcha"
             )
 
             self._payload = [
